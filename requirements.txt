@@ -1,5 +1,9 @@
 argparse==1.2.1
 beautifulsoup4==4.3.2
+cssselect==0.9.1
 distribute==0.6.34
+python-dateutil==2.1
 requests==2.0.0
+six==1.4.1
+ts2avi==0.1.1
 wsgiref==0.1.2

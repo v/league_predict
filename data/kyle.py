@@ -77,15 +77,10 @@ with open('free_week.csv') as handle:
                 champ['last_free'] = week_num
                 champ['times_free'] += 1
 
-            if released(date, champ):
+            if released(date, champ) and champ['name'] in free_champs:
                 csv_data = [
-                    str(next_free(week_num, champ['name'])),
-                    str(weeks_since_free),
-                    str(champ['times_free']),
-                    str(champ['ip']),
-                    str(champ['popularity']),
-                    str(champ['ban_rate']),
                     str(champ['difficulty']),
+                    str(weeks_since_free),
                 ]
 
                 print ','.join(csv_data)

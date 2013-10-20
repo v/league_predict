@@ -79,6 +79,7 @@ with open('free_week.csv') as handle:
 
             if released(date, champ) and champ['name'] in free_champs:
                 csv_data = [
+                    str(next_free(week_num, champ['name'])),
                     str(champ['difficulty']),
                     str(weeks_since_free),
                 ]

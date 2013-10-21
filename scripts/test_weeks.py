@@ -1,3 +1,4 @@
+""" This file makes a CSV that has data about champion features anytime they are free """
 import csv
 from collections import defaultdict
 from dateutil.parser import parse

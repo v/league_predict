@@ -8,7 +8,7 @@ def percent(input):
     return float(input.strip('%'))/100
 
 champions = {}
-with open('champions.csv') as handle:
+with open('../data/champions.csv') as handle:
     reader = csv.DictReader(handle, ['Name', 'RP', 'IP', 'Popularity', 'Win Rate', 'Ban Rate', 'Meta', 'Released', 'Difficulty'])
 
     i = 0
@@ -40,7 +40,7 @@ def released(date, champ):
 
 free_champ_data = []
 
-with open('free_week.csv') as handle:
+with open('../data/free_week.csv') as handle:
     reader = csv.reader(handle, delimiter=',', quotechar='"')
 
     for line in reader:
@@ -59,7 +59,7 @@ def next_free(week_num, champ):
 
     return curr - week_num
 
-with open('free_week.csv') as handle:
+with open('../data/free_week.csv') as handle:
     reader = csv.reader(handle, delimiter=',', quotechar='"')
 
     week_num = 0

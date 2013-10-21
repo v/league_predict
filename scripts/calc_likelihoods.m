@@ -1,4 +1,4 @@
-D = csvread('../data/free_features.csv');
+D = csvread('free_champ_features.csv');
 
 sample_size = 16886;
 

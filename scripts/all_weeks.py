@@ -9,7 +9,7 @@ def percent(input):
 
 champions = {}
 with open('../data/champions.csv') as handle:
-    reader = csv.DictReader(handle, ['Name', 'RP', 'IP', 'Popularity', 'Win Rate', 'Ban Rate', 'Meta', 'Released', 'Difficulty'])
+    reader = csv.DictReader(handle, ['Name', 'RP', 'IP', 'Popularity', 'Win Rate', 'Ban Rate', 'Meta', 'Released', 'Difficulty', 'RiotMeta'])
 
     i = 0
 
@@ -23,6 +23,7 @@ with open('../data/champions.csv') as handle:
         ban_rate = percent(line['Ban Rate'])
         released = parse(line['Released'])
         difficulty = line['Difficulty']
+        riotmeta = line['RiotMeta'].split(':')
 
         champions[name] = {
             'name': name,
@@ -33,6 +34,7 @@ with open('../data/champions.csv') as handle:
             'difficulty': difficulty,
             'last_free': 0,
             'times_free': 0,
+            'riotmeta': riotmeta,
         }
 
 def released(date, champ):
@@ -86,6 +88,7 @@ with open('../data/free_week.csv') as handle:
                     str(champ['difficulty']),
                     str(weeks_since_free),
                     str(champ['times_free']),
+                    str(':'.join(champ['riotmeta'])),
                 ]
 
             print ','.join(csv_data)

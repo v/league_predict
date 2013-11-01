@@ -35,7 +35,7 @@ with open('../data/champions.csv') as handle:
             'difficulty': difficulty,
             'last_free': 0,
             'times_free': 0,
-            'meta': riotmeta,
+            'riotmeta': riotmeta,
         }
 
 def released(date, champ):
@@ -88,7 +88,7 @@ with open('../data/free_week.csv') as handle:
                     str(champ['difficulty']),
                     str(weeks_since_free),
                     str(champ['times_free']),
-                    str(':'.join(champ['meta'])),
+                    str(':'.join(champ['riotmeta'])),
                 ]
 
                 print ','.join(csv_data)

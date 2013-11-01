@@ -1,129 +1,58 @@
-import csv
 import sys
 from collections import defaultdict
-from dateutil.parser import parse
 from pprint import pprint
 
-def categorize_since(input):
-    if 0 <= input <= 7:
-        return int(input)
+from util import champion_features, compute_likelihoods, compute_released_dates_difficulties, categorize_diff, categorize_since, predict, get_free_champs
 
-    if 8 <= input <= 10:
-        return 8
+METAS = ['top', 'mid', 'jungle', 'adc', 'support']
 
-    if 11 <= input <= 13:
-        return 9
+free_champ_data = get_free_champs()
 
-    if input >= 14:
-        return 10
+def matches(predictions, actual):
+    champs = [prediction[0] for prediction in predictions]
 
-def categorize_diff(input):
-    return int(input)
+    return set(actual).intersection(set(champs))
 
-def compute_likelihoods(curr_week, riotmeta):
-    rv = defaultdict(int)
-    for line in open('fuck').readlines():
-        parts = line.strip().split(',')
+def compute_week(week):
+    actual_champs = free_champ_data[week]
 
-        week_num = parts[0]
+    top_10 = []
+    top_20 = []
+    top_30 = []
 
-        if int(week_num) < int(curr_week):
-            #difficulty = int(parts[2])
-            difficulty = categorize_diff(parts[2])
-            weeks_since_free = categorize_since(int(parts[3]))
+    for meta in METAS:
+        predictions = predict(week, meta)
 
-            entry = (difficulty, weeks_since_free)
-            times_free = parts[4]
+        top_10 += predictions[:2]
+        top_20 += predictions[:4]
+        top_30 += predictions[:6]
 
-            champ_meta = parts[5].split(':')
-            if riotmeta in champ_meta:
-                rv[entry] += 1
 
-    return rv
+    ten = matches(top_10, actual_champs)
+    twenty = matches(top_20, actual_champs)
+    thirty = matches(top_30, actual_champs)
 
-def print_matrix(matrix):
-    rv = ""
-    for i in range(1, 11):
-        for j in range(0, 11):
-            rv += "%d " % (matrix[(i,j)])
+    #predictions = predict(week, None)
 
-        rv += "\n"
-    print rv
+    #ten = matches(predictions[:10], actual_champs)
+    #twenty = matches(predictions[:20], actual_champs)
+    #thirty = matches(predictions[:30], actual_champs)
+
+    return ten, twenty, thirty
 
 if __name__ == '__main__':
+    num_weeks = 0
 
-    if len(sys.argv) != 3:
-        print 'Missing week number and meta argument'
-        sys.exit(1)
-    curr_week = str(int(sys.argv[1]) - 1)
+    sums = [0, 0, 0, 0]
+    for week in range(100, 203):
+        ten, twenty, thirty, all = compute_week(week)
 
-    METAS = ['top', 'mid', 'jungle', 'adc', 'support']
+        sums[0] += len(ten)
+        sums[1] += len(twenty)
+        sums[2] += len(thirty)
 
-    # the meta being checked
-    check_meta = sys.argv[2]
+        print num_weeks, [len(ten), len(twenty), len(thirty)], ten
 
-    likelihoods = compute_likelihoods(curr_week, check_meta)
+        num_weeks += 1
 
-    #figure out when these doods were released.
-    released = {}
-    difficulties = defaultdict(int)
-    with open('../data/champions.csv') as handle:
-
-        reader = csv.DictReader(handle, ['Name', 'RP', 'IP', 'Popularity', 'Win Rate', 'Ban Rate', 'Meta', 'Released', 'Difficulty', 'RiotMeta'])
-
-        i = 0
-        for line in reader:
-            if i == 0:
-                i += 1
-                continue
-            name = line['Name']
-            released_date = parse(line['Released'])
-
-            riotmeta = line['RiotMeta'].split(':')
-
-            release_week = (released_date - parse('2009-11-25')).days / 7
-
-            if release_week < 0:
-                release_week = 0
-            released[name] = release_week
-
-            if check_meta in riotmeta:
-                difficulties[categorize_diff(int(line['Difficulty']))] += 1
-    print difficulties
-
-    champions = {}
-    with open('../data/all_weeks.csv') as handle:
-        reader = csv.DictReader(handle, ['Week', 'Name', 'Difficulty', 'Since', 'Times', 'RiotMeta'])
-
-        for line in reader:
-            if line['Week'] == curr_week:
-                name = line['Name']
-                difficulty = line['Difficulty']
-                since = line['Since']
-                times = int(line['Times'])
-
-                riotmeta = line['RiotMeta'].split(':')
-
-                if check_meta in riotmeta:
-                    champions[name] = {
-                        'name': name,
-                        'difficulty': difficulty,
-                        'since': since,
-                        'times': times,
-                    }
-
-    for name in champions.keys():
-        champ = champions[name]
-        d = categorize_diff(champ['difficulty'])
-        category = categorize_since(int(champ['since']))
-
-        times = champ['times']
-        prior = float(times) / (int(curr_week) - released[name])
-
-        champ['likelihood'] = likelihoods[(d, category)] / difficulties[categorize_diff(champ['difficulty'])]
-        champ['prior'] = prior
-
-    sorted_list = sorted(champions.iteritems(), key=lambda x: -(x[1]['likelihood'] * x[1]['prior']) )
-
-    for item in sorted_list:
-        print item[0], item[1]
+    print [x / (num_weeks * 10.0) for x in sums]

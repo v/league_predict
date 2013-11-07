@@ -53,10 +53,10 @@ def compute_likelihoods(released):
 
         champ_meta = parts[5].split(':')
         for meta in champ_meta:
-            rv[week_num][meta][entry] += 1.0 / champion_count(released, week_num, meta)
-            #rv[week_num][meta][entry] += 1
-        #rv[week_num][None][entry] += 1.0
-        rv[week_num][None][entry] += 1.0 / champion_count(released, week_num)
+            #rv[week_num][meta][entry] += 1.0 / champion_count(released, week_num, meta)
+            rv[week_num][meta][entry] += 1
+        rv[week_num][None][entry] += 1.0
+        #rv[week_num][None][entry] += 1.0 / champion_count(released, week_num)
 
     return rv
 
@@ -184,7 +184,10 @@ def predict(curr_week, meta):
         if d in difficulties[meta]:
             num_difficulty = difficulties[meta][d]
 
-        champ['likelihood'] = likelihoods[(d, category)] / num_difficulty
+        avg = 0
+        avg += likelihoods[(d, category)]
+
+        champ['likelihood'] = avg / num_difficulty
         champ['prior'] = prior
 
     predictor = lambda x: -(x[1]['likelihood']*x[1]['prior'])

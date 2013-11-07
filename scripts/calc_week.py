@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     meta_sum = [0, 0, 0]
     no_meta_sum = [0, 0, 0]
-    for week in range(100, 203):
+    for week in range(50, 203):
         ten, twenty, thirty = compute_week(week)
 
         meta_sum[0] += len(ten)

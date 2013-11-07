@@ -26,7 +26,7 @@ def categorize_diff(input):
 def compute_likelihoods(released):
     rv = {}
 
-    for line in open('fuck').readlines():
+    for line in open('../data/free_champ_features.csv').readlines():
         parts = line.strip().split(',')
 
         week_num = int(parts[0])

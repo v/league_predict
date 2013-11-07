@@ -31,27 +31,40 @@ def compute_week(week):
     twenty = matches(top_20, actual_champs)
     thirty = matches(top_30, actual_champs)
 
-    #predictions = predict(week, None)
+    return ten, twenty, thirty
 
-    #ten = matches(predictions[:10], actual_champs)
-    #twenty = matches(predictions[:20], actual_champs)
-    #thirty = matches(predictions[:30], actual_champs)
+def compute_week_no_meta(week):
+    actual_champs = free_champ_data[week]
+
+    predictions = predict(week, None)
+
+    ten = matches(predictions[:10], actual_champs)
+    twenty = matches(predictions[:20], actual_champs)
+    thirty = matches(predictions[:30], actual_champs)
 
     return ten, twenty, thirty
 
 if __name__ == '__main__':
     num_weeks = 0
 
-    sums = [0, 0, 0]
+    meta_sum = [0, 0, 0]
+    no_meta_sum = [0, 0, 0]
     for week in range(100, 203):
         ten, twenty, thirty = compute_week(week)
 
-        sums[0] += len(ten)
-        sums[1] += len(twenty)
-        sums[2] += len(thirty)
+        meta_sum[0] += len(ten)
+        meta_sum[1] += len(twenty)
+        meta_sum[2] += len(thirty)
+
+        ten, twenty, thirty = compute_week_no_meta(week)
+
+        no_meta_sum[0] += len(ten)
+        no_meta_sum[1] += len(twenty)
+        no_meta_sum[2] += len(thirty)
 
         print num_weeks, [len(ten), len(twenty), len(thirty)], ten
 
         num_weeks += 1
 
-    print [x / (num_weeks * 10.0) for x in sums]
+    print 'Meta:', [x / (num_weeks * 10.0) for x in meta_sum]
+    print 'No Meta:', [x / (num_weeks * 10.0) for x in no_meta_sum]

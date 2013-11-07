@@ -33,6 +33,12 @@ def compute_likelihoods(released):
 
         if week_num not in rv:
             rv[week_num] = {}
+
+            if week_num > 0:
+                rv[week_num][None] = rv[week_num - 1][meta].copy()
+            else:
+                rv[week_num][None] = defaultdict(int)
+
             for meta in METAS:
                 if week_num > 0:
                     rv[week_num][meta] = rv[week_num - 1][meta].copy()
@@ -47,8 +53,10 @@ def compute_likelihoods(released):
 
         champ_meta = parts[5].split(':')
         for meta in champ_meta:
-            #rv[week_num][meta][entry] += 1.0 / champion_count(released, week_num)
-            rv[week_num][meta][entry] += 1
+            rv[week_num][meta][entry] += 1.0 / champion_count(released, week_num, meta)
+            #rv[week_num][meta][entry] += 1
+        #rv[week_num][None][entry] += 1.0
+        rv[week_num][None][entry] += 1.0 / champion_count(released, week_num)
 
     return rv
 
@@ -61,11 +69,12 @@ def print_matrix(matrix):
         rv += "\n"
     print rv
 
-def champion_count(released, week_num):
+def champion_count(released, week_num, meta=None):
     count = 0
     for champ in released.keys():
-        if released[champ] <= week_num:
-            count += 1
+        if not meta or meta in metas[champ]:
+            if released[champ] <= week_num:
+                count += 1
     return count
 
 
@@ -76,7 +85,10 @@ def compute_released_dates_difficulties():
     for meta in METAS:
         difficulties[meta] = defaultdict(int)
 
+    difficulties[None] = defaultdict(int)
+
     released = {}
+    metas = defaultdict(list)
     with open('../data/champions.csv') as handle:
 
         reader = csv.DictReader(handle, ['Name', 'RP', 'IP', 'Popularity', 'Win Rate', 'Ban Rate', 'Meta', 'Released', 'Difficulty', 'RiotMeta'])
@@ -99,7 +111,12 @@ def compute_released_dates_difficulties():
 
             for meta in champ_meta:
                 difficulties[meta][categorize_diff(int(line['Difficulty']))] += 1
-    return released, difficulties
+
+                metas[name].append(meta)
+
+            difficulties[None][categorize_diff(int(line['Difficulty']))] += 1
+
+    return released, difficulties, metas
 
 def champion_features():
     """ Returns a list of all champions of the given meta and their features for the given week. """
@@ -122,6 +139,7 @@ def champion_features():
                 rv[week_num] = {}
                 for meta in METAS:
                     rv[week_num][meta] = {}
+                rv[week_num][None] = {}
 
             for meta in champ_meta:
                 rv[week_num][meta][name] = {
@@ -131,9 +149,17 @@ def champion_features():
                     'times': times,
                 }
 
+            #I shoud feel dirty for copy pasta.
+            rv[week_num][None][name] = {
+                'name': name,
+                'difficulty': difficulty,
+                'since': since,
+                'times': times,
+            }
+
         return rv
 
-released, difficulties = compute_released_dates_difficulties()
+released, difficulties, metas = compute_released_dates_difficulties()
 all_likelihoods = compute_likelihoods(released)
 all_champions = champion_features()
 

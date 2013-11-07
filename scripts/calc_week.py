@@ -2,9 +2,8 @@ import sys
 from collections import defaultdict
 from pprint import pprint
 
-from util import champion_features, compute_likelihoods, compute_released_dates_difficulties, categorize_diff, categorize_since, predict, get_free_champs
+from util import champion_features, compute_likelihoods, compute_released_dates_difficulties, categorize_diff, categorize_since, predict, get_free_champs, METAS
 
-METAS = ['top', 'mid', 'jungle', 'adc', 'support']
 
 free_champ_data = get_free_champs()
 
@@ -43,9 +42,9 @@ def compute_week(week):
 if __name__ == '__main__':
     num_weeks = 0
 
-    sums = [0, 0, 0, 0]
+    sums = [0, 0, 0]
     for week in range(100, 203):
-        ten, twenty, thirty, all = compute_week(week)
+        ten, twenty, thirty = compute_week(week)
 
         sums[0] += len(ten)
         sums[1] += len(twenty)

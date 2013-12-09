@@ -89,7 +89,7 @@ Name,RP,IP,Popularity,Win Rate,Ban Rate,Meta,Released,Difficulty,RiotMeta
 "Syndra","975","6300","2.63%","44.54%","0.1%","Middle Lane","9/13/2012",10,mid
 "Talon","880","4800","3.33%","50.63%","0.08%","Top Lane","8/24/2011",6,mid
 "Taric","585","1350","8.04%","50.85%","0.04%","Support","8/19/2009",3,support
-"Teemo","585","1350","8.19%","52.42%","0.4%","Top Lane","2/21/2009",4,top:mid:support
+"Teemo","585","1350","8.19%","52.42%","0.4%","Top Lane","2/21/2009",4,top:mid
 "Thresh","975","6300","26.32%","48.12%","34.9%","Support","1/23/2013",7,support
 "Tristana","585","1350","12.38%","48.29%","0.03%","AD Carry","2/21/2009",3,adc:mid
 "Trundle","880","4800","1.67%","47.3%","0.03%","Jungler","12/1/2010",5,jungle:top
